@@ -8,27 +8,71 @@ There are a _lot of AWS services_, and while studying for the _AWS Solutions Arc
 
 Below are visualizations the main AWS services covered in the exam, grouped by business capability (not exhaustive).
 If you are studying for your exam, be sure to **_understand the distinction between all the services available in each group_**.
-Most questions within the exam will have you _choosing between the services in each grouping_ based on a specific scenario.
+Most questions within the exam will have you _choosing between the services in each grouping_ based on the specific scenario.
+
+_Please note: the lines below are not exhaustive, but usually indicates the service **only** works with the services pointed at_
 
 ---
 
 ## Compute Solutions
+For compute solutions, I'd recommend understanding _**EC2 instances** and **Lambda functions**_ well.
+In particular, I found it helpful to understand:
+- Difference between EC2 launch types eg. on-demand, reserved and spot
+- EC2 placement groups eg. cluster, partition and spread
+- Lambda execution and resource limits
+- When to use AWS Batch over Lambda or autoscaling EC2 instances
 
-<Image src="/aws-solutions-architect-associate/aws-compute.png" alt="A short breakdown of each AWS service related to compute solutions." />
-
+[![aws-compute](./../aws-solutions-architect-associate/aws-compute.png)](./../aws-solutions-architect-associate/aws-compute.png)
 ---
 ## Security Services
+For security services, having a strong understanding of _**IAM roles and policies** and **security groups and network ACLs**_ would be very beneficial.
+In my experience there were a lot of multi-account context questions relating to _access between accounts_ and _how we would manage resources under different organizational units (OUs)._
 
-<Image src="/aws-solutions-architect-associate/aws-security.png" alt="A short breakdown of each AWS service related to security services." />
+Some specific details I found helpful include:
+- Understanding IAM groups, roles and policies, especially in a multi-account context
+- When to use AWS Shield, AWS WAF and the Network Firewall
+- Difference between security groups and network ACLs and when to use them
+- When to use Guard Duty and Inspector
+- Difference between encrpytion options including KMS, HSM and S3 encryption options
+
+[![aws-security](./../aws-solutions-architect-associate/aws-security.png)](./../aws-solutions-architect-associate/aws-security.png)
 ---
 ## Storage Services
+A strong understanding in _**S3 and different database options**_ are required for this section.
+I personally found multiple questions related to setting data migrations and setting up hybrid file systems.
 
+I'd recommend at the minimum understanding the below topics:
+- S3 storage classes, versioning and cross-region replication
+- Amazon EBS volume types and when to use them
+- Database questions can be answered by narrowing the options in databases between:
+    - SQL vs. NoSQL
+    - OLTP vs. OLAP
+    - Multi-AZ support vs. Cross-Region support
+    - Managed vs. Serverless
+- Difference between data migration services and hybrid cloud options eg. DataSync, Snow family and Storage Gateway
 
+[![aws-storage](./../aws-solutions-architect-associate/aws-storage.png)](./../aws-solutions-architect-associate/aws-storage.png)
 ---
 ## Networking Services
+For networking services, I would focus on the _**interactions between CloudFront and S3 and the differences between Direct Connections, VPC Peering and Transit Gateway.**__
+
+Some particular points to focus in this section are:
+- When to use network ACLs and security groups
+- How CloudFront and S3 work together to restrict access to user groups eg. signed cookies and pre-signed urls
+- When to use Direct Connection vs. VPNs vs. Private Links
+- Difference between transit gateway and VPC peering
+
+[![aws-networking](./../aws-solutions-architect-associate/aws-networking.png)](./../aws-solutions-architect-associate/aws-networking.png)
+---
+## Application Integration / Distributed Systems
 
 
 ---
-## Machine Learning Services
+## Account Management Services
 
+---
+### Machine Learning Services
+These tops are not as important, we only really need to know at a very surface level what each service does. 
+
+---
 Did you enjoy this article? Let me know what you think on [LinkedIn](https://www.linkedin.com/in/aden-huen-653765a5) or _aden.huen@gmail.com_
