@@ -9,8 +9,8 @@ import { Logo } from "@/components/logo"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "adenhuen | blog",
-  description: "A blog for software engineering topics",
+  title: "ByteSpring",
+  description: "A blog for software engineering, career development and project management topics",
 }
 
 interface RootLayoutProps {
