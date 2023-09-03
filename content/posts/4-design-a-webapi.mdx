@@ -1,0 +1,145 @@
+---
+title: How to Design a *Decent* Webapi
+description: A practical, high level approach to designing a webapi using best practices such as Domain Driven Design (DDD), the Repository Pattern, Command Query Response Segregation (CQRS) and Hexagonal architecture
+date: "2023-08-24"
+---
+
+A _common [kata](https://en.wikipedia.org/wiki/Kata)_ done at my workplace is to build a webapi.
+Each engineer does this multiple times, as a way to share knowledge and discuss best practices.
+This article _contains my takeaways from performing this exercise several times_ and details my opinions on what makes a good design.
+
+Today we'll take a _practical look at **key concepts** that will help build our application._ 
+We do this by applying _**Domain Driven Design (DDD), the Repository Pattern, Command Query Response Segregation (CQRS) and Hexagonal Architecture**_ to the structure of our webapi.
+
+## Domain Driven Design (DDD)
+<img src="/design-a-webapi/domain-driven-design-header.png" width="718" height="404" alt="Image shows an encapsulated domain surrounded by external domains." style={{borderRadius:'15px'}} />
+Domain Driven Design (DDD) is a set of principles that aims to build a _deep understanding of a problem domain, and creating software systems that **reflect the real-world**._
+The idea behind DDD is to be able to break problems down into specific, isolated domains that we can solve for fully. 
+
+In my opinion, a _well designed software domain_ will be _**easy to understand**_, _**encapsulates only the concepts needed**_ and _**is hard to represent invalid states**._ 
+
+To practice DDD, we first encapsulate the requirements of our problem into areas that can be self-contained. 
+The _better we **understand our problem**_, the _more our **domain can be tailored to solve that problem**_ eg.
+- _I need to store data_
+- _I need to be able to used via the web_
+- _I need to process images_
+- _Interface with a system_
+- _Provide a specific service_
+
+Developing with these domains in mind, we can use the _most suitable data structures, vocabulary and component architecture_ to solve that domain.
+
+### REST Domain Example
+#### At a high level
+Let's take a look at the REST domain as an example, say we have a service that _processes dog photos and adds a hat to each dog identified._ 
+We've built the system but want to host this service online, so we'll need to _implement a layer to handle web requests._ 
+
+This domain will _handle an **application's ability to receive and serve web requests, and nothing more**._ 
+So _what responsibilities would our REST domain have?_
+- ✔ receive and respond to HTTP requests
+- ✔ route requests to relevant business functions
+- ✔ provide user-facing error handling
+- ✗ read and save data to a database
+- ✗ process dog images
+- ✗ authenticate or authorize users
+
+A minimal set of components in the REST layer may look a little something like this:
+<img src="/design-a-webapi/domain-driven-design-example.png" width="718" height="404" alt="Image shows an example REST domain setup." style={{borderRadius:'15px'}} />
+
+Driving system design with _clear, thought-out domains_ makes code more:
+- ✔ _**modular**_
+- ✔ _**maintainable**_
+- ✔ _**understandable**_
+- ✔ _**testable**_
+- ✔ _**extendable**_
+
+Domain Driven Design aims to create software systems with a strong connection to the problem domain, fostering flexible and maintainable code. 
+It is particularly beneficial in dealing with complex domains and the evolving requirements of users.
+
+_If you want to learn more about DDD at the code level,  watch this space!_
+
+---
+
+## Repository Pattern
+<img src="/design-a-webapi/repository-header.png" width="718" height="404" alt="Image showing a person requesting various components from an interface." style={{borderRadius:'15px'}} />
+The Repository pattern abstracts data access logic from its underlying implementation _eg. databases, files or APIs._
+This decouples application logic from data gathering logic, providing a clear data interface for _any domain or data storage service to use._
+
+To do this, we build our application logic to use a repository interface, abstracting away how we get the data. 
+The repository interface could look like this:
+<img src="/design-a-webapi/repository-interface-1.png" width="718" height="404" alt="An code image showing an interface." style={{borderRadius:'15px'}} />
+
+Using this interface, our business logic can reliably get the data it needs, leaving the _implementation to a different domain_.
+This can be done by referencing the repository interface in your business logic like below:
+<img src="/design-a-webapi/repository-logic-repo-1.png" width="718" height="404" alt="An code image showing a business logic class using the repository interface." style={{borderRadius:'15px'}} />
+
+Later on, in a _completely different domain_, we can implement _how we get the data_ mapping our database logic to the repository interface 
+_eg. say we've decided we want to use an SQL database to store our data, we will write code that performs that logic and adapt our functions to fit the interface specification._ 
+
+The implementation could look like this:
+<img src="/design-a-webapi/repository-db-repo-1.png" width="718" height="404" alt="An code image showing the implementation of the repository interface." style={{borderRadius:'15px'}} />
+
+Notice how building our business logic this way gives us the _flexibility to switch out repositories in the future?_
+It also gives the opportunity for _other domains to use this interface if they require the data._  
+By aligning our business logic to interfaces, we could switch our repository to be backed by a file system, an API or just mocked a fake backend for testing, and our business logic would be none-the-wiser.
+
+---
+
+## Command Query Response Segregation (CQRS)
+CQRS is a software pattern that separates the _**reading of data** (queries)_ from the _**modification of data** (commands)._
+This is because _different database characteristics are needed to serve read and write functions_, and as an application scales, bottlenecks usually form in these areas.  
+
+Although not strictly needed, implementing this pattern enables greater scalability, maintainability and is often a crucial step in developing event sourced applications.
+
+<img src="/design-a-webapi/command-query-response-segregation-header.png" width="718" height="404" alt="Image showing CQRS setup allow databases to scale." style={{borderRadius:'15px'}} />
+
+The key concept in implementing CQRS is to encapsulate a user's requirements into _**queries** and **commands**_.
+For example, for a small webapi our business logic could have _two high level classes_, the **query handler** and **command handler**.
+
+The handlers abstract _**all incoming requests from the user**_ which frees up the rest of the application to provide the expected response in whichever way makes the most sense.
+Extending from the Repository pattern, the architecture may look like:
+
+<img src="/design-a-webapi/cqrs-query-command.png" width="718" height="404" alt="Image shows a high level CQRS implementation." style={{borderRadius:'15px'}} />
+
+Besides performance benefits, this pattern makes extending the application for new user requirements much easier, as we can _encapsulate the new functionality into a query or command._  
+
+---
+
+## Hexagonal Architecture
+Also known as _Onion architecture_ and _Ports and Adapters architecture_, the idea behind this concept is to isolate your core business logic with technology-agnostic ports.
+
+Ports are interfaces used to communicate with the _outside world_, both to be controlled by and to control external domains.
+Having business logic solely mapping to these ports, external components will only need to talk to these specifications to make the application work. 
+
+<img src="/design-a-webapi/hexagonal-architecture-core.png" width="718" height="404" alt="Image showing many ports on the border of a core domain." style={{borderRadius:'15px'}} />
+
+Designing the core domain this way insulates the application from future changes.
+If a new way of interacting with the webapi is introduced (say we need to support RPC calls), only that portion of the logic will need to be implemented thanks to our decoupled architecture.
+The core domain, and all other domains in this application would not need to change.
+
+---
+
+## Putting it all together
+Okay, _that was a lot - but we're almost there._ How would our webapi look if we put all these concepts together?
+
+<img src="/design-a-webapi/putting-it-together.png" width="718" height="404" alt="Image shows all the concepts put together in a high level setup." style={{borderRadius:'15px'}} />
+
+Lets look at a user request as we route through the system:
+1. A new user request is received in the REST domain, where it is converted to a _request domain type_
+2. Once the request has been validated, the router will call the _**query handler**_ or _**command handler** interface (with all necessary data)_ based on the user's request
+3. The _**query/command handler** uses supporting business functions_ to process the request, calling to the _repository interface_ when it needs to interact with the database
+4. The persistence domain listens for requests and _handles communication to and from the database_
+5. The _**query/command handler**_ returns their response to the router
+6. The router _converts the response to a user-friendly one,_ and sends it to the user
+
+Hooray!
+
+<img src="/design-a-webapi/black-wizard-stella.jpg" width="718" height="404" alt="An image of a dog with a wizard hat." style={{borderRadius:'15px'}} />
+
+What we've covered here are the lessons I've learned while trying to build a webapi that is scalable, maintainable and extendible.
+This architecture tackles the strong coupling between presentation, business and data layers in conventional setups and tries to avoid many of the common pitfalls they entail.
+
+I hope this helps you in your journey to _building better software systems,_ I would love to hear about the issues you've experienced implementing your webapi, and your thoughts on how we could further improve this model.  
+
+---
+
+Did you enjoy this article? Let me know what you think on [LinkedIn](https://www.linkedin.com/in/aden-huen-653765a5) or _aden.huen@gmail.com_

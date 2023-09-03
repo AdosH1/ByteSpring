@@ -1,0 +1,109 @@
+---
+title: AWS Solutions Architect Associate Exam Visual Guide
+description: A visualisation of the services provided by AWS for the solutions architect associate exam and tips to study for it
+date: "2023-08-06"
+---
+
+There are a _lot of AWS services_, and while studying for the _AWS Solutions Architect Associate (SAA-03)_ exam, it felt like there was a new service every question.
+
+Below are visualizations of the main AWS services covered in the exam, grouped by capability.
+If you are studying for your exam, be sure to **_understand the distinction between all the services available in each group_**.
+Most questions within the exam will have you _choosing between the services in each grouping_ based on the specific scenario.
+
+_Please note: Lines drawn between services are **not exhaustive**, but usually indicates the service **only works with the services pointed at** (in that category)._
+
+---
+
+## Compute Solutions
+Compute solutions are a large portion of the exam, I'd recommend understanding _**EC2 instances** and **Lambda functions**_ particularly well as these are covered extensively.
+
+Some specific topics I found useful studying for include:
+- Difference between _**EC2 launch types** eg. on-demand, reserved and spot instances_
+- _**EC2 placement groups** eg. cluster, partition and spread placements_
+- _**Lambda execution** and **resource limits**_
+- When to use _**AWS Batch** over **Lambda** or **auto-scaling EC2 instances**_
+
+[![aws-compute](./../aws-solutions-architect-associate/aws-compute.png)](./../aws-solutions-architect-associate/aws-compute.png)
+
+---
+
+## Security Services
+For security services, having a strong understanding of _**IAM roles and policies** and **security groups vs. network ACLs**_ would be very beneficial.
+In my experience there were a lot of _**multi-account context** questions_ relating to _**resource access between accounts** and **ways to manage configuration/compliance across accounts**._
+
+Some specific details I found helpful to learn include:
+- Understanding _**IAM groups, roles and policies**, especially in a multi-account context_
+- When to use _**AWS Shield, AWS WAF** and the **Network Firewall**_
+- When to use _**Secrets Manager**, **Key Management Service (KMS)** and **Parameter Store**_ 
+- Difference in encryption options between _**KMS, HSM and S3 encryption**_
+
+[![aws-security](./../aws-solutions-architect-associate/aws-security.png)](./../aws-solutions-architect-associate/aws-security.png)
+
+---
+
+## Storage Services
+A strong understanding in _**S3 and different database options**_ are required for this section.
+I personally also found multiple questions asking _which data migration services to use_ and _which hybrid file systems best suit the situation._
+
+I'd recommend ensuring you've studied the topics below before the exam:
+- _**S3 storage classes, versioning, object-locking and cross-region replication**_
+- _**Amazon EBS volume types** and when to use them_
+- **Most database questions** can be answered by _narrowing the options in databases between_:
+    - SQL vs. NoSQL
+    - OLTP vs. OLAP
+    - Multi-AZ support vs. Cross-Region support
+    - Managed vs. Serverless
+- _**Difference between data migration services and hybrid cloud options** eg. DataSync, Snow family and Storage Gateway_
+
+[![aws-storage](./../aws-solutions-architect-associate/aws-storage.png)](./../aws-solutions-architect-associate/aws-storage.png)
+
+---
+
+## Networking Services
+For networking services, I would focus on the _interactions between **CloudFront and S3**, and the differences between **Direct Connection, VPC Peering and Transit Gateway.**_
+
+Some particular points to focus in this section are:
+- Difference between _**security groups** vs. **network ACLs** and when to use them_
+- How _**CloudFront and S3** work together to restrict access to user groups eg. signed cookies and pre-signed urls_
+- When to use _**Direct Connection vs. VPNs vs. Private Links**_
+- What **Transit Gateway** solves when using **VPC peering**
+
+[![aws-networking](./../aws-solutions-architect-associate/aws-networking.png)](./../aws-solutions-architect-associate/aws-networking.png)
+
+---
+
+## Application Integration
+Most questions in this section revolve around _**connecting distributed systems**_ and the specifics around _**EventBridge, SQS, SNS and API Gateway.**_
+I'd look to specifically understand:
+
+- The difference between _**SQS and FIFO SQS** and their default limits eg. max queue lifetime and max throughput_
+- How _**EventBridge, SQS, SNS** fit in with common event-driven architectures eg. fan-in/fan-out and linking event listeners to SNS for distribution_ 
+
+[![aws-integration](./../aws-solutions-architect-associate/aws-integration.png)](./../aws-solutions-architect-associate/aws-integration.png)
+
+---
+
+## Management Services
+There is a broad set of management services which can appear as part of a bigger question. 
+Having a basic understand of each service, especially _**Cloud Trail, Cloud Watch, Savings Plans, Systems Manager, Cloud Formation and Organizations**_ would be useful in tackling the most common ones. 
+
+- When to use _**Cloud Trail** vs. **Cloud Watch** and their tangential services eg. cloud trail events, cloud watch agents_
+- How **Organizations** and **Control Tower** help manage and their role in migrating AWS accounts and organisations
+- The different types of _**Savings Plans** offered_
+- Ability to read and understand basic **Cloud Formation** templates
+
+[![aws-management](./../aws-solutions-architect-associate/aws-management.png)](./../aws-solutions-architect-associate/aws-management.png)
+
+---
+
+### Machine Learning Services
+These topics are not as important, I found that we only really need to know _what each service does at a very surface level._ 
+I'd recommend focusing in other areas and just memorizing the name of each service and what they do.
+
+See image below.
+
+[![aws-machine-learning](./../aws-solutions-architect-associate/aws-machine-learning.png)](./../aws-solutions-architect-associate/aws-machine-learning.png)
+
+---
+
+Did you enjoy this article? Let me know what you think on [LinkedIn](https://www.linkedin.com/in/aden-huen-653765a5) or _aden.huen@gmail.com_
