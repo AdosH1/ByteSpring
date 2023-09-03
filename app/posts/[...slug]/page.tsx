@@ -37,7 +37,7 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams(): Promise<PostProps["params"][]> {
-  return allPosts.reverse().map((post) => ({
+  return allPosts.map((post) => ({
     slug: post.slugAsParams.split("/"),
   }))
 }
