@@ -7,14 +7,14 @@ date: "2023-08-03"
 Exceptions handle programming logic in cases where they cannot be resolved at that level of abstraction.
 They can be used in different ways, but most commonly they are used as **_error handlers_** and for **_control flow_**.
 
-However, we've been taught that we should minimize the use of exceptions, as _exceptions have a cost associated with them_, but just **_how costly are exceptions really?_**
+We've been taught that we should minimize the use of exceptions, as _exceptions have a cost associated with them_, but just **_how costly are exceptions really?_**
 
-[Aleksey Shipilёv](https://twitter.com/shipilev) wrote an [article](https://shipilev.net/blog/2014/exceptional-performance/) micro-benchmarking exception handling in Java on the JVM.
+[Aleksey Shipilёv](https://twitter.com/shipilev) wrote an [article](https://shipilev.net/blog/2014/exceptional-performance/) that micro-benchmarks exception handling in the JVM.
 Below we'll take a look at the key learnings from the article to understand how we can go about using and managing exceptions with regards to application performance.
 
-## Exception Instantiation
 Exceptions have two main costs, **exception instantiation** and **stack unwinding**.
 
+## Exception Instantiation
 _Instantiation_ is the creation of the exception object. This is more costly than creating a regular object as it also has to _**fill in a stacktrace** with the current application's state._ 
 Below is the time cost of returning a value vs. raising exceptions.
 
@@ -91,18 +91,22 @@ Throwing exceptions however, **_do not need to worry about the unhappy path unti
 
 So should we use exceptions or not? _It depends._
 For the vast majority of cases, use the style that makes the most sense for your team.
-_You probably don't need to think about any of this_ unless you're actually having performance issues.
+Even if you're having performance issues, _the bottleneck is usually somewhere else._
 
-It is interesting to note that using result type handling will provide **_more consistent performance_** whereas exceptions are **_great when they're truly exceptional._** 
+It is interesting to note that using result-type error handling will provide a **_more consistent performance profile_** whereas _**exceptions perform better when they're truly exceptional._** 
 
-#### Exceptions for Control Flow Optimization
+#### Exceptions for Control Flow Optimization?
 One interesting thing this article revealed is that in Java/Kotlin, you're able to manually override and disable the filling of the stacktrace in your exceptions.
 ```kotlin
 // this function is overridable to do nothing!
 throwable.fillInStackTrace() 
 ```
 
-Disabling stacktrace on control flow exceptions _(and leaving the **real errors**)_ could reduce the normal cost of exception handling by **~96%**!
+Disabling stacktrace on control flow exceptions _(leaving the **unexpected errors**)_ could reduce the normal cost of exception handling by **~96%**!
+
+This is **not without sacrifice** though, as some _observability solutions may log stacktraces_ encounted in your code, which reduces the information available when debugging through systems.
+
+If _something does go wrong_ in normal exception for control flow, it will make it harder to troubleshoot the issue when using logs or by running through code.
 
 ---
 
