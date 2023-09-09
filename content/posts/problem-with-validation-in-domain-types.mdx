@@ -1,0 +1,102 @@
+---
+title: The Problem with Data Validation in Domain Types
+description: My experience with over-engineered data validation in my domain types that caused me big problems over time
+date: "2023-09-05T00:00:00Z"
+---
+
+When designing our domains, we're often tempted to create domain types that _strongly implement business rules._ 
+Some more opinionated developers would argue that we _**shouldn't ever use primitive types in our domain**_,
+preferring to include atleast a wrapper over them at a minimum _eg. an Email type that holds a string._ 
+
+The problem with having simple wrappers over primitives is that even if you're holding onto a type, 
+you can't be sure its _a **valid type**,_ as it couldn't been instantiated with bad data _eg. a username created with illegal characters._
+
+Using domain types without eliminating bad data defeats the purpose of isolating out our domain, opening the floodgates for side-effects and error-ridden code.
+
+---
+
+## Building Strong Domain Types
+To tackle this issue, you may think to add _**validation logic into your domain types**_, which will prevent the user from creating one with bad data.
+
+We could do this by using a private constructor and exposing a static creation method that requires validation.
+
+<img src="/data-validation-in-domain-types/code-strong-domain-type.png" width="718" height="404" alt="An code image showing an interface." style={{borderRadius:'15px'}} />
+
+This way - when we create an domain type, it will either return a _**valid type**_ or you'll be given a _**null**, **none** or **error result** (depending on your implementation)._
+This provides us extremely strong domain types that ensures all types in the business logic are validated.
+
+<img src="/data-validation-in-domain-types/strong-domain.png" width="718" height="404" alt="An image showing bad data unable to enter a validated domain." style={{borderRadius:'15px'}} />
+
+This solves the problem of ensuring that our business logic is to specification, however, there are very real and hidden costs we've introduced into the system that aren't obvious until much later!
+
+---
+
+## The Problem with Changing Requirements
+Lets say we have an application that consists of a **user interface, business logic** and a **database**. 
+We need to gather form data to sign users up and display data back to them at a later time. 
+Some fields may have specific rules _eg. usernames must not contain special characters_
+
+So we implement this rule into our domain type, protecting our domain from bad inputs. _Our business functions can **execute with confidence**._
+
+A couple months pass by and you suddenly realise, _we missed excluding **#’s** in our username validation logic!_ 
+
+It turns out users have been making names with hashtags since launch but thankfully, 
+this is a simple change. 
+Our validation code is simply in the _**username**_ type. So we'll change that and…
+
+<p style={{'text-align': 'center'}}>_**BOOM! Runtime error!**_</p>
+
+<img src="/data-validation-in-domain-types/strong-domain-fail.png" width="718" height="404" alt="An image showing bad data unable to enter a validated domain from the database." style={{borderRadius:'15px'}} />
+
+Because we didn't take into account the _**stored invalid data** in our database,_ every scan of the database crashes the application!
+This drift between the new and old specification is a big issue, as it breaks the application at runtime.
+
+At this point, _if we choose not to redesign the code_, theres really only one option: to update the data in the database to the new standard.
+
+With new data standards, there will either need to be a _transition time for **users to update their data**_ or _engineering time to **seek and realign data**._
+The problem with our current design is that our **application can't run** while connected to the database. 
+I think there much be a better way to handle this specification drift.   
+
+---
+
+## Pushing Validation to the Edge
+I think the best solution to this problem is to _push the **validation logic as close to the source as possible.**_
+This will not weaken our domain types, because we're able to _**trust our own application** to adhere to the standards_, 
+as long as we're able to validate from all external sources beforehand.
+
+By pushing out our validation code as far as possible, we're actually _**maximizing the amount of stable code in our system**._  
+
+<img src="/data-validation-in-domain-types/trusted-weak-domain.png" width="718" height="404" alt="An image showing bad data unable to pass validated, into a trusted domain zone." style={{borderRadius:'15px'}} />
+
+So we can remove the validation from our domain types and implement it as close to the user interface as possible _- what happens now?_
+It's important to ask whether we deem _**our database to be an external component or an internal one**_.
+In this case, we'll assume the database is owned and operated by us, so we'll treat it as part of our trusted domain.
+
+This makes our business domain more flexible, allowing our application to not _immediately crash_ on start up. 
+However, we're still be experiencing issues when trying to respond to user requests, as the validation logic is preventing our _now illegal_ data from going out to users.  
+
+<img src="/data-validation-in-domain-types/weak-domain-almost-there.png" width="718" height="404" alt="An image showing data failing to exit the externally facing validation zone." style={{borderRadius:'15px'}} />
+
+There may be one more missing piece to this puzzle.
+
+### Validate in, not out
+If we _**trust our entire application and not just the domain**_, then we really only need to validate data that is going into the system.
+A practical way to implement this separation could be to set up _**strong user request types** and **weaker user response types**._ 
+
+<img src="/data-validation-in-domain-types/weak-domain-there.png" width="718" height="404" alt="An image showing data successfully exit the externally facing validation zone." style={{borderRadius:'15px'}} />
+
+Setting up the project this way allows our application to be flexible enough to continue operations, even while the data is not fully aligned to the new standard.
+
+There is no silver bullet to fix the existing data, 
+but having the application able to run gives the development team options to either require users to update their own details, 
+or have the engineering team to cleanup the database.
+
+Having strong domain types are a great way to encapsulate the logic of real world systems, 
+but there is a necessity to be flexible and adapt to changing requirements and external systems.
+
+I think my most important lesson from this experience is to _**design for how a system (and its surrounding components) will change over time**_.
+Our future maintainers will thank us greatly in the future, and that maintainer **may still be you**.
+
+---
+
+Did you enjoy this article? Let me know what you think on [LinkedIn](https://www.linkedin.com/in/aden-huen-653765a5) or _aden.huen@gmail.com_

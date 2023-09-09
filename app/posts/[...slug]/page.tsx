@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation"
-import { allPosts } from "contentlayer/generated"
+import { allPosts, Post } from "contentlayer/generated"
 
 import { Metadata } from "next"
 import { Mdx } from "@/components/mdx-components"
@@ -37,7 +37,14 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams(): Promise<PostProps["params"][]> {
-  return allPosts.map((post) => ({
+  var sortedPosts = allPosts.sort(function(a: Post,b: Post){
+    var aa = new Date(a.date)
+    var bb = new Date(b.date)
+    return bb.getHours() - aa.getHours();
+  }).reverse();
+
+  return sortedPosts
+          .map((post) => ({
     slug: post.slugAsParams.split("/"),
   }))
 }
@@ -51,7 +58,7 @@ export default async function PostPage({ params }: PostProps) {
 
   return (
     <article className="py-6 prose dark:prose-invert">
-      <h1 className="mb-2">{post.title}</h1>
+      <h1 className="mb-0">{post.title}</h1>
       {post.description && (
         <p className="text-xl mt-0 text-slate-700 dark:text-slate-200">
           {post.description}
@@ -62,3 +69,4 @@ export default async function PostPage({ params }: PostProps) {
     </article>
   )
 }
+
