@@ -2,11 +2,9 @@ import { allPosts, Post } from "@/.contentlayer/generated"
 import Link from "next/link"
 
 export default function Home() {
-  var sortedPosts = allPosts.sort(function(a: Post,b: Post){
-    var aa = new Date(a.date)
-    var bb = new Date(b.date)
-    return bb.getHours() - aa.getHours();
-  }).reverse();
+  var sortedPosts = allPosts.sort((a,b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
   
   return (
     <div className="prose dark:prose-invert">
