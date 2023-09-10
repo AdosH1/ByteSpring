@@ -37,13 +37,7 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams(): Promise<PostProps["params"][]> {
-  var sortedPosts = allPosts.sort(function(a: Post,b: Post){
-    var aa = new Date(a.date)
-    var bb = new Date(b.date)
-    return bb.getHours() - aa.getHours();
-  }).reverse();
-
-  return sortedPosts
+  return allPosts
           .map((post) => ({
     slug: post.slugAsParams.split("/"),
   }))
