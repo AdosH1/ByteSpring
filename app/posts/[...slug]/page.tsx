@@ -4,6 +4,8 @@ import { allPosts, Post } from "contentlayer/generated"
 import { Metadata } from "next"
 import { Mdx } from "@/components/mdx-components"
 
+import { ArticleFooter } from "@/components/articles/article-footer"
+
 interface PostProps {
   params: {
     slug: string[]
@@ -60,6 +62,7 @@ export default async function PostPage({ params }: PostProps) {
       )}
       <hr className="my-4" />
       <Mdx code={post.body.code} />
+      <ArticleFooter />
     </article>
   )
 }

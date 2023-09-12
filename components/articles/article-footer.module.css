@@ -1,0 +1,22 @@
+.ctabutton {
+    background-color: lightblue;
+    border: 0px;
+    border-radius: 15px;
+    padding: 5px 0px;
+    min-width: 40%;
+    
+}
+
+.ctabutton:hover {
+    background-color: #9cc7d6;
+}
+
+.email {
+    border: 1px;
+    border-style: solid;
+    border-radius: 8px;
+    border-color: silver;
+    min-width: 55%; 
+    padding: 5px 5px;
+    margin-right: 10px;
+}
