@@ -9,7 +9,7 @@ export function ArticleFooter() {
           Did you enjoy this article? Let me know what you think at <i>aden@bytespring.io</i>
         </p>
         <p style={{marginBottom: '5px', marginTop: '2px'}}>
-          If you&apos;d like to keep up to date and get these articles in the mail, subscribe to my newsletter below! 
+          If you&apos;d like to keep up to date and get the snippets in the mail, subscribe to my newsletter below 
         </p>
         <form action="https://buttondown.email/api/emails/embed-subscribe/bytespring"
             method="post"
