@@ -1,6 +1,6 @@
 ---
 title: How to Design a *Decent* Webapi
-description: A practical, high level approach to designing webapis using best practices such as Domain Driven Design (DDD), the Repository Pattern, Command Query Response Segregation (CQRS) and Hexagonal architecture
+description: A practical, high level approach to designing webapis using best practices such as domain design, the Repository Pattern, Command Query Response Segregation (CQRS) and Hexagonal architecture
 date: "2023-08-24T00:00:00Z"
 ---
 
@@ -9,16 +9,16 @@ Each engineer does this multiple times, as a way to share knowledge and discuss 
 This article _contains my takeaways from performing this exercise several times_ and details my opinions on what makes a good design.
 
 Today we'll take a _practical look at **key concepts** that will help build our application._ 
-We do this by applying _**Domain Driven Design (DDD), the Repository Pattern, Command Query Response Segregation (CQRS) and Hexagonal Architecture**_ to the structure of our webapi.
+We do this by applying _**domain design, the Repository Pattern, Command Query Response Segregation (CQRS) and Hexagonal Architecture**_ to the structure of our webapi.
 
-## Domain Driven Design (DDD)
+## Domain Design
 <img src="/design-a-webapi/domain-driven-design-header.png" width="718" height="404" alt="Image shows an encapsulated domain surrounded by external domains." style={{borderRadius:'15px'}} />
-Domain Driven Design (DDD) is a set of principles that aims to build a _deep understanding of a problem domain, and creating software systems that **reflect the real-world**._
-The idea behind DDD is to be able to break problems down into specific, isolated domains that we can solve for fully. 
+Domain design is a set of principles that aims to build a _deep understanding of a problem domain, and creating software systems that **reflect the real-world**._
+The idea behind domain design is to be able to break problems down into specific, isolated domains that we can solve for fully. 
 
 In my opinion, a _well designed software domain_ will be _**easy to understand**_, _**encapsulates only the concepts needed**_ and _**is hard to represent invalid states**._ 
 
-To practice DDD, we first encapsulate the requirements of our problem into areas that can be self-contained. 
+To practice domain design, we first encapsulate the requirements of our problem into areas that can be self-contained. 
 The _better we **understand our problem**_, the _more our **domain can be tailored to solve that problem**_ eg.
 - _I need to store data_
 - _I need to be able to used via the web_
