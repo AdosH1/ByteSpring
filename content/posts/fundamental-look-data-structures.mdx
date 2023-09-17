@@ -1,0 +1,105 @@
+---
+title: A Fundamental Look at Data Structures
+description: A quick exploration of how data structures exist in memory and how there are really only two data structures that create the rest of the cohort
+date: "2023-09-17T00:00:00Z"
+---
+
+Data structures at their core are a way to store and manipulate data in a computer. It provides a framework to organise the 1s and 0s into human-understandable concepts.
+Picking the correct data structure for a task is important, as it helps run things smoothly and saves you time from (re)inventing complex solutions to handle data.
+
+In this issue, we're going to explore how data is stored and the 2 fundamental data structures that create the rest of the cohort - the ***array** and the **linked list.***
+
+### Structured Bytes
+Systems nowadays are usually 32 or 64-bit, meaning there are 32-64 individual 1s and 0s to represent each number and character we can imagine.
+
+For simplicity in this article, we'll call each group of 32/64 bits a _memory cell._
+
+<img src="/fundamental-view-data-structures/bytespring-bytes.png" 
+    width="718" height="404" 
+    alt="Bytespring spelled out in memory cells" 
+    style={{borderRadius:'15px'}} />
+
+To access a stored character or number, we’ll need a reference to their address in physical memory. 
+This is a fundamental ability for computers, so performing this action is extremely quick because the computer knows exactly where to go to find the data.
+
+<img src="/fundamental-view-data-structures/memory-address.png" 
+    width="718" height="404" 
+    alt="A user knowing which memory cell to choose because it knows its address" 
+    style={{borderRadius:'15px'}} />
+
+Unfortunately, individual memory cells are quite limited in storage, and to reference anything bigger, we’ll need to group these cells together.
+_Data structures_ are these memory cells stored together in a particular order so that they can solve real-world problems. 
+
+## Contiguous Memory 
+The easiest way to solve the storage problem is to have the neighbouring cells also be part of our data, 
+so the computer can access them as a group. This allows us to store lists of numbers, words or full sentences and is what we would conventionally call an _**array**._
+
+<img src="/fundamental-view-data-structures/contiguous-pizza.png" 
+    width="718" height="404" 
+    alt="A row of memory cells spelling PIZZA" 
+    style={{borderRadius:'15px'}} />
+
+Access is incredibly fast on any element in the list, as the computer knows how far along the address is from the reference point. 
+This is why in code, when we want to get an element from an array, we also pass in the *offset* from that memory address.
+
+<img src="/fundamental-view-data-structures/array-reference-offset.png" 
+    width="718" height="404" 
+    alt="Code of dinner items in a list, with an index to reference the 4th element" 
+    style={{borderRadius:'15px'}} />
+
+_Note: The computer does do some smarts with variable length elements, as they also have to know the length of each element to be able to skip to the next element._
+
+Inserting and removing elements from an array can be an issue though, as it takes many operations to make room or fill the hole made when inserting/deleting an element.
+
+<img src="/fundamental-view-data-structures/contiguous-pizza-delete.png" 
+    width="718" height="404" 
+    alt="Shows the issue of needing to move elements after a value is deleted inside an array" 
+    style={{borderRadius:'15px'}} />
+
+In the same vein if you need more space, extending an array can be difficult if there's not enough space in that register! 
+The only way to do this is to _copy the entire array into a new area_ with a larger size.
+
+<img src="/fundamental-view-data-structures/contiguous-pizza-expansion.png" 
+    width="718" height="404" 
+    alt="Shows an array expansion problem when there's no more room in the register" 
+    style={{borderRadius:'15px'}} />
+
+Arrays are very beneficial when needing to access and navigate memory cells due to their simple structure and isolated memory blocks.
+However, more work is required when creating or modifying the array due to the need for contiguous memory and making room for new elements.
+That is the trade-off we make for _**exceptional read performance**._
+
+## Non-Contiguous Memory
+The other way to store data is by _associating the next memory address after every element_ so that we always know where the next cell is. 
+This similarly allows us to store lists of elements, but with different characteristics for access and modification. 
+We call this data structure the _**linked list**._
+
+<img src="/fundamental-view-data-structures/noncontiguous-cake.png" 
+    width="718" height="404" 
+    alt="Shows the word CAKE stored letter by letter in different cells in memory" 
+    style={{borderRadius:'15px'}} />
+
+This data structure allows memory to be stored in smaller chunks around the neighbourhood. 
+Accessing a specific element in a linked list is a little harder, as we only have a reference to the starting element. 
+A computer has to crawl through each element from the start until it finds the element it is looking for.
+
+The benefit of this structure is that adding and removing elements is very easy once you have an element, as you can simply a change where the memory addresses point to. 
+
+<img src="/fundamental-view-data-structures/noncontiguous-cake-delete.png" 
+    width="718" height="404" 
+    alt="Shows how easy it is to remove an element in the middle of CAKE" 
+    style={{borderRadius:'15px'}} />
+
+Similarly, if we need to extend the length of our linked list we can do so without much issue, we just add a reference to the new memory address at the end of the list. 
+Linked lists don’t require a large set of contiguous memory to be set aside either, no so copying arrays or element rejigging is ever needed to maintain the structure.
+
+## Data Structures in the Wild
+
+Data structures are simply ways we organise and store data, you may have seen other structures such as _**stacks**, **queues**, **dictionaries** and **trees**._ 
+Under the hood, they are all combinations and specific implementations of _**arrays**_ and _**linked lists**_.
+
+I encourage you to have a think how this is possible, can you recognise how other data structures implement themselves with only arrays and linked lists?
+
+<img src="/fundamental-view-data-structures/datastructures.png" 
+    width="718" height="404" 
+    alt="An image of datastructures being built by arrays and linked lists" 
+    style={{borderRadius:'15px'}} />
