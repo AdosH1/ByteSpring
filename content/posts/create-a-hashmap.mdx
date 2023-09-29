@@ -1,0 +1,118 @@
+---
+title: How to Create a Hashmap from Scratch
+description: A high level walkthrough of the design and data structures involved in creating your very own hashmap 
+date: "2023-08-25T00:00:00Z"
+---
+
+Hashmaps are one of the most common and useful data structures that power the internet, and for good reason. 
+It is used heavily used in data caching, file systems and general algorithms but not many people know how one is built.
+
+In this issue, we will run over the _**characteristics of a hashmap**, **what hashing functions are** and **how we can build very our own hashmap**._
+
+---
+
+## Characteristics of a Hashmap
+
+Hashmaps give access to key-value style storage while maintaining exceptional performance retrieving and entering data.
+It can hold pretty much any data as a key or value (include nulls) and work well with many basic operations like keeping count or aggregating distinct elements due to its low operational time complexity. 
+
+The drawback with hashmaps is that they use more memory than other data structures,
+elements are not guaranteed to be ordered and that it is not thread-safe by default, which can cause issues due to corruption and undefined behaviour. 
+
+However given how many problem contexts mitigate its drawbacks, hashmaps have become a staple data structure with pretty _minimal trade-offs._
+
+### Obtaining O(1) Access
+
+If you read our article on [A Fundamental Look on Data Structures](/posts/fundamental-look-data-structures), you’ll know that theres only 2 underlying data structures we can use to develop a hashmap, an array and a linked list.
+
+To provide O(1) access to elements, we'll have to use an array.
+When we compare how a hashmap functions to an array, we can see they are actually quite similar.
+
+<img src="/create-a-hashmap/hashmap-array-key.png" width="718" height="404" alt="Shows the similarity between indexing an array and a hashmap" style={{borderRadius:'15px'}} />
+
+The _**index**_ of the array has been replaced by a _**key** that could be potentially any object_, but otherwise the rest of the data structure is _(almost)_ the same .
+
+---
+
+## Hashing Functions - Converting Objects to Numbers
+If we can somehow produce a unique number from an object, then we can use that number as the index for an array. 
+These are known as _**hashing functions**_, and theres an infinite way of implementing them. 
+
+<img src="/create-a-hashmap/object-hash-number.png" width="718" height="404" alt="An object passing through a hashing function" style={{borderRadius:'15px'}} />
+
+An example _hashing function for a string_ would be to convert all letters into their numbers by order of appearance in the alphabet, then adding them together.
+
+<img src="/create-a-hashmap/hashmap-under-hood.png" width="718" height="404" alt="Shows an string key converted into a number but adding the letters together" style={{borderRadius:'15px'}} />
+
+A _**good hashing function**_ would _maximize the variance of input to output_, where small changes in the data cause large differences in the hash. 
+The idea here is to spread data as equally as possible along all possible positions in the array.
+
+#### A minor problem
+If we used our example string hash, we would need to reserve a large amount of memory pre-allocating an array that can handle large hashes.
+Given _any length of array_, there will always be the possiblity that someone uses a string thats a little bit longer than we designed for.
+
+One way we can solve this issue is to bind the hash to a given size by using the _**modulo operation**_ on the hash.
+This will clamp any number into the range from _0 to just under your modulo amount._
+
+<img src="/create-a-hashmap/supercali.png" width="718" height="404" alt="Shows how the modulo operator can conform index to a limit" style={{borderRadius:'15px'}} />
+
+And voila, we've found a way to _**convert string keys into array indices**._ 
+This kind of process can be implemented for all types of objects, but is beyond the scope of this article. 
+For simplicity’s sake, many languages have their own hashcode function already implemented for most objects, 
+so we can use that in our implementation instead.
+
+<img src="/create-a-hashmap/code-hashcode.png" width="718" height="404" alt="Test code trying out Kotlin's implementation of hashCode" style={{borderRadius:'15px'}} />
+
+### Handling Collisions
+
+What happens if two indexes are calculated at the same value? Most hashing functions are pretty good at giving unique values, but it is not foolproof.
+
+For example, using our string hashing function on the words _**race**_ and _**care**_ will result in the same hash!
+This is an unfortunate reality that we have to handle.
+
+<img src="/create-a-hashmap/collision.png" width="718" height="404" alt="Two words, race and care have the same hash value using our old hashing function" style={{borderRadius:'15px'}} />
+
+The solution is a trade-off, instead of storing the raw value in our array, we can store a _(linked)_ list of elements in any single index.
+This way, we can append each collision we find into the list.
+
+This makes our getting and setting logic a bit more difficult, 
+as we'll have to search through the list to find the _**matching key and value**_.
+_Note: A colliding key will have the same hash, so we'll have to also check against the raw query key in order to retrieve the right element_
+
+<img src="/create-a-hashmap/LL-hashmap.png" width="718" height="404" alt="A hashmap built with an array of linked lists" style={{borderRadius:'15px'}} />
+
+Collisions _technically_ break our O(1) access to elements however, the longer the array is the less likely we are to collide and preserve our hashmap performance. 
+The trade-off is that in the unlikely case there are collisions, we’ll be able to retrieve multiple values on the same index due to the linked list structure.
+
+---
+
+## Creating Our Own Hashmap
+So now that we know the theory to implementing a hashmap, how would our class look like?
+Here is an example in Kotlin, though any language will suffice.
+
+<img src="/create-a-hashmap/code-hashmap-class.png" width="718" height="404" alt="An example class of a hashmap" style={{borderRadius:'15px'}} />
+
+Let's go over line by line:
+- (L1) Our hashmap is implemented over a _generic **K** and **V**_, which will allow us to store any key or value as its inputs. 
+- (L2) A _**DEFAULT_MAX_SIZE**_ must be defined to pre-allocate memory for our underlying array
+- (L3) We define the bulk of our new data structure - _an array holding a linked list!_
+- (L5-6) These are the main functions we have to interact with our hashmap, the _**operator**_ functions allows us to use the syntax _hashmap[key] = value_
+- (L8-10) My implementation of a linked list, though your language's native linked list will work as long as the internal object contains _both **key** and **value**_ information inside
+
+To implement our _**get function**_, we'll need to find the index in our array, then traverse down the linked list for the element.
+
+<img src="/create-a-hashmap/code-hashmap-get.png" width="718" height="404" alt="Example implementation of get method in kotlin" style={{borderRadius:'15px'}} />
+
+Reading through line by line:
+- (L4) Notice we're returning a _nullable V?_ This operation can fail and return null
+- (L5) Here we call our hash function which will return an Int clamped to the range of our array
+- (L6) This line extracts the linked list object at the index of the array
+- (L7) We call a helper function to traverse the linked list, matching our query key to the key stored in the list. We return the value once a match is found.
+
+Perhaps you can complete the _**helper function** and **set method**_ on your own?
+Try explore your own solutions and let me know how you go!
+
+Once the **get** and **set** methods are implemented, this would suffice as a minimum viable hashmap that we can use to store data.
+Later on, you may want to be able to **clear**, **get all keys** or add **your own custom functionality** to your hashmap. 
+
+I'll leave that to you to explore, happy coding out there!
