@@ -1,7 +1,10 @@
 'use client';
+import { useTheme } from "next-themes"
 import styles from './article-footer.module.css'
  
 export function ArticleFooter() {
+  const { theme } = useTheme()
+
   return (
     <div>
         <hr style={{margin: '25px 0px'}}/>
@@ -18,7 +21,7 @@ export function ArticleFooter() {
         >
             <div>
               <input type="email" name="email" id="bd-email" className={styles.email} placeholder="cool-dev@gmail.com"/>
-              <input type="submit" value="Subscribe" className={styles.ctabutton}/>
+              <input type="submit" value="Subscribe" className={theme === 'dark' ? styles.ctaButtonDark : styles.ctaButton}/>
             </div>
         </form>
     </div>
