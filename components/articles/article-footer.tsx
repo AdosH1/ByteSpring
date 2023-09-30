@@ -24,6 +24,11 @@ export function ArticleFooter() {
               <input type="submit" value="Subscribe" className={theme === 'dark' ? styles.ctaButtonDark : styles.ctaButton}/>
             </div>
         </form>
+
+        <p style={{fontSize: '12px'}}><i>
+          Disclosure: The links provided in this blog may be affiliate links. 
+          I will be financially supported by commissions if you use these link to make a purchase, thank you.
+        </i></p>
     </div>
   )
 }
