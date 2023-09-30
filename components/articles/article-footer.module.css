@@ -1,10 +1,18 @@
-.ctabutton {
+.ctaButton {
     background-color: lightblue;
     border: 0px;
     border-radius: 15px;
     padding: 5px 0px;
     min-width: 40%;
-    
+}
+
+.ctaButtonDark {
+    background-color: darkseagreen;
+    color: white;
+    border: 0px;
+    border-radius: 15px;
+    padding: 5px 0px;
+    min-width: 40%;
 }
 
 .ctabutton:hover {
