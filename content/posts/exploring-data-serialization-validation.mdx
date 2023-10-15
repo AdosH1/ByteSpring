@@ -1,0 +1,145 @@
+---
+title: Exploring Data Serialization and Validation with Data Transfer Objects (DTOs) 
+description: Data serialization and data validation are two distinct processes that often get intermingled together. This article shows how DTOs can be used to help segregate responsibilities between the domain and the outside world to create cleaner and more manageable services
+date: "2023-10-03T00:00:00Z"
+---
+
+In environments where different systems need to talk to each other, 
+it can be difficult aligning services to agree on a multitude of things:
+- What data to pass around 
+- What rules the data should follow
+- How data is passed around 
+
+This is because for any service trying to talk to another, 
+the receiving service does not have any understanding the sender's context _eg. their programming language, object structure or business rules_
+
+Data passed between different services may be superficially similar to your domain, but they are not the same.
+In this issue, we'll explore the _**concept of data serialization and validation**, and **how data transfer objects (DTOs) can help create cleaner microservices**._
+
+## How We Talk to External Domains
+We can think of a single application or microservice as a workflow, that accepts inputs and produces outputs.
+Outside of this domain, there is no guarantee on the type or structure of data, nor the ability for our workflow to be able to deserialize it. 
+
+<img src="/benefit-of-serialization-types/workflow-context.png" 
+    width="718" 
+    height="404" 
+    alt="Shows a workflow without any context from an upstream message queue and downstream database" 
+    style={{borderRadius:'15px'}} />
+
+There are many frameworks and libraries out there that handle the communication between services, 
+usually by implementing both sides of the communication pipeline.
+However, unless the environment and your use-cases are set in stone, 
+it is usually better to lean towards _**reducing coupling between services**_ to leave room for future expansion. 
+
+With that in mind, the method our workflow uses to receive and transmit data will need to be _**independent from specific technologies and frameworks**_ 
+and that the _**data sent must be serialiable** (and deserializable)_
+
+### Independent from Specific Technologies and Frameworks
+To reduce coupling, communication between services should not rely on any specific framework or library,
+_especially if it requires 3rd parties to also use that technology._
+Doing so forces other applications to implement a specific way to talk with you, 
+even if they already have established communication protocols.
+
+This is why language agnostic protocols such as _**JSON, XML** and **Protobuf**_ are used.
+Most programming languages are able to read and write data with this protocol and form objects based on that data.
+
+<img src="/benefit-of-serialization-types/workflow-overview.png" 
+    width="718" 
+    height="404" 
+    alt="Shows a workflow talks to services with JSON/XML/Protobuf" 
+    style={{borderRadius:'15px'}} />
+
+Using a specific technology may be fine for your use-case if you control both ends of communication, 
+but you do have to keep in mind that it has implications for the future development of your project.
+
+### Serializable and Deserializable
+It is the role of each service to be able to deserialize incoming data into its own domain types,
+and output something that can be used by other services.
+This means being _**able to represent complex domain types in simple formats**_, 
+and _**avoid sending**_ non-serializable data such as _class instances, functions and points._
+
+It is also worth noting that concepts such as _**int8**_ or _**discriminated unions**_ may exist in some programming languages but not in others.
+Care needs to be taken when trying to serialize data between different contexts.
+
+<img src="/benefit-of-serialization-types/dso-gone-wrong.png" 
+    width="718" 
+    height="404" 
+    alt="Image of pointer being serialized, leading to a robot smashing a vase instead of a bug" 
+    style={{borderRadius:'15px'}} />
+
+
+## Data Serialization vs. Data Validation
+Serialization is the _**conversion of a program's representation of an object into one that can be sent and understood**_ by another service.
+Data validation is _**application of business rules on a deserialised object**_ to ensure it matches a business's requirements.
+
+Although two distinct processes, it is common to see workflows handle both areas at the same time.
+Seperating these processes _**decouples the concerns and constraints imposed by both serialization and validation**_.
+
+For example, consider this piece of code: 
+<img src="/benefit-of-serialization-types/code-order.png" 
+    width="718" 
+    height="404" 
+    alt="Code of an order class with lots of serialization logic inside" 
+    style={{borderRadius:'15px'}} />
+
+This code is a classic example of business concepts like _OrderType_ and _calculateOrderCost()_ mixed with serialization concepts. 
+This mix of concerns leads to weird coupling, 
+where both producer and consumer need to have intimate knowledge of each other and domain types will try to adjust itself to make the serialization process work _(at the expense of business purity)._ 
+
+It also makes validation more difficult, as the domain must handle deserializing types like _Food and LocalDate_
+while also ensuring the data matches the rules of the business _eg. Food must be a MenuItem and the expiry time must not have passed today._
+
+If we can seperate the serialization stuff into a DTO, 
+then our workflow will only be responsible for interfacing with the DTO and validating its data.
+This brings forth multiple benefits.
+
+<img src="/benefit-of-serialization-types/dso-flow.png" 
+    width="718" 
+    height="404" 
+    alt="Image showing a JSON string becoming a Data Serialization Object then a domain type and back" 
+    style={{borderRadius:'15px'}} />
+
+## Benefits of Using DTOs
+A DTO is a simple data object consisting (usually) of only data primitives so that it is easy to serialize.
+It contains logic to serialize itself into different formats, 
+but does not include any data constraints or business rules.  
+
+#### Decoupling the Domain
+DTOs provide a middleman between the our domain and the outside world.
+It decouples the domain by encapsulating all the data we need to receive and produce, and formalizing it into an object _- the DTO_.
+
+<img src="/benefit-of-serialization-types/dto-contract.png" 
+    width="718" 
+    height="404" 
+    alt="An image of a business domain ONLY needing to talk to DTOs to function" 
+    style={{borderRadius:'15px'}} />
+
+This allows our domain to focus on _what it's meant for, business logic._  
+The data inside DTOs are not guaranteed to be valid for the business domain as they are simple data objects. 
+The domain will need to apply their own business rules to the data before being able to use it. 
+A high level architecture of a microservice may look like below
+
+<img src="/benefit-of-serialization-types/workflow-setup.png" 
+    width="718" 
+    height="404" 
+    alt="An image of a workflow surrounded by DTOs and with validation logic" 
+    style={{borderRadius:'15px'}} />
+
+
+#### DTOs as Data Contracts
+Having a formalized object for data transfer acts as a contract for both producers and consumers of data.
+This means it no longer matters _**how or where you produce the data**, so long as at the end you're able to **produce the DTO**._
+
+This means regardless of the number of ways data is stored or serialized _eg. JSON via database or XML via SOAP API_,
+there is only ever a single point of validation needed for the domain.
+
+#### Data Versioning
+With DTOs as a data contract, we can version the properties within the DTO for backwards compatibility.
+This means being able to add conditional logic to identify and retroactively handle old data, 
+and allowing services to continue operations without needing to immediately migrate data.
+
+_Note: If you read [The Problem with Data Validation in Domain Types](./problem-with-validation-in-domain-types),_
+_then adding conditional logic to retroactively handle outdated data would be a great way to mitigate runtime issues while maintaining strong domain types._
+
+Data serialization and data validation are different processes that often get intermingled within an application.
+We can build more modular and maintainable systems by separating these processes by using DTOs. 
