@@ -1,0 +1,95 @@
+---
+title: How to Write Your Own Higher Order Functions (HOFs)
+description: Higher order functions are seen everywhere, but we rarely think about how they work. In this issue we'll explore how you can implement the most common HOFs and explain how that benefits you 
+date: "2023-10-21T00:00:00Z"
+---
+
+Higher order functions (HOFs) are functions that either _**take in a function**_ as an argument, or _**produce a function**_ as an output.
+We commonly use these everyday, but very rarely think about how they work.
+
+HOFs provides the developer another level of control over how your programs run, and how developers interact with your code. 
+It also makes your code easier to read and reuse, by using a declarative format it produces functional code that also signifies developer intent.
+
+Besides just expanding your knowledge, understanding HOFs are a key requirement for using more functional languages like F# and Haskell where _**for loops don't exist** and **operators are overloaded as functions**._
+
+In this issue, we're going to look at how we can implement the most common HOFs and explore how they benefit our code design.
+
+---
+
+## Map
+Map functions are known by many different names _eg. select, transform, apply, foreach_. 
+Map applies a function to a list of _**N**_ elements and produces another list of _**N**_ elements.  
+_Note: The return type of the map function can be different from the input type._  
+<img src="/write-higher-order-functions/code-map.png" 
+    width="718" 
+    height="404" 
+    alt="Code showing the implementation of Map" 
+    style={{borderRadius:'15px'}} />
+
+---
+
+## Filter
+Filter takes in any function that returns a boolean, and applies it to every element in a list of _**N**_ elements to produce _**M**_ elements, where _**M** is less than or equal to **N**_.
+Notably, filter takes in a type _**T**_ and will always return the same type.
+<img src="/write-higher-order-functions/code-filter.png" 
+    width="718" 
+    height="404" 
+    alt="Code showing the implementation of Filter" 
+    style={{borderRadius:'15px'}} />
+
+---
+
+## Reduce
+Reduce takes in a type _**T**_ and some _**accumulator**_, returning any type _**U**_ (defined by the function argument).  
+The _**accumulator**_ is an initial value given to begin the reduction function. 
+For example, if you needed to sum the elements in a listm you would need to keep a running total as you read the list. 
+That running total is your _**accumulator**_ (which usually starts at 0).  
+Like map, reduce can output a type that is different from the input type and signifies an N → 1 process.
+
+<img src="/write-higher-order-functions/code-reduce.png" 
+    width="718" 
+    height="404" 
+    alt="Code showing the implementation of Reduce" 
+    style={{borderRadius:'15px'}} />
+
+_Note: A side (or main) benefit of these functions is that they're fully parallelizable! See [MapReduce](https://en.wikipedia.org/wiki/MapReduce) and all the associated data science tools made by big tech companies._
+
+---
+
+## Abstracting Control flow
+Looking at HOFs you might think - _these are really generic_, but that’s the beauty of it.
+What we're actually doing is abstracting the control flow of variables and functions, 
+which gives you new ways to control a program.
+
+For example, when we break down the filter function we can see that we have very little control over the flow of data besides the filtering condition we pass in.
+<img src="/write-higher-order-functions/code-filter-control.png" 
+    width="718" 
+    height="404" 
+    alt="Code showing the implementation of Filter with boxes drawn around what we can and can't change" 
+    style={{borderRadius:'15px'}} />
+
+Looking at functions this way gives us a lot more leverage in how we design our systems for control flow.
+Although a little contrived, below we can see an example of a function that can swap the arguments of any 2 parameter function! 
+<img src="/write-higher-order-functions/code-swap.png" 
+    width="718" 
+    height="404" 
+    alt="Code showing the implementation of a function that takes in another function but swaps its arguments" 
+    style={{borderRadius:'15px'}} />
+
+## Benefits
+Using higher order functions in your code makes it _more concise, readable, and maintainable._
+They promote a more _declarative_ and _functional style_ of programming, which often leads to cleaner and more readable code. 
+Instead of writing explicit loops and conditional statements, you can _express your intentions_ in a more natural way.
+For example, take a look at two equivalent functions below:
+
+<img src="/write-higher-order-functions/code-fancy.png" 
+    width="718" 
+    height="404" 
+    alt="Code comparison between imperitive and declaritive styles" 
+    style={{borderRadius:'15px'}} />
+
+HOFs with a declaritive approach focuses on _**what**_ the function is doing whereas the imperative approach focuses on the _**how**_.
+Using a declarative approach signifies developer intent much more clearly in this example.
+
+Higher-order functions allow you to encapsulate common patterns of behavior into reusable functions. 
+This allows you to compose together and reuse functions, making logic easier to maintain.
