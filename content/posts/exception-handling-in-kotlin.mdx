@@ -1,0 +1,111 @@
+---
+title: Exception Handling in Kotlin
+description: The use of exceptions vs. result types is a controversial topic that has sparked strong feelings on both sides of the fence. Kotlin's unique history has subtley shifted its developers a certain way, and in this article I will share my opinon on how developers should handle exceptions and control flow in Kotlin. 
+date: "2023-12-09T00:00:00Z"
+---
+
+Kotlin is a modern programming language with its first stable release dating back to February 2016.
+It began development in 2010 as developers found a need to build a language that was _concise, elegrant and expressive, but also **interoperable with Java**_.
+
+This lead to many design decisions that have shaped the way we program in Kotlin,
+and with regard to the use of exceptions vs. result types, Kotlin has inherited the learnings, and baggage of Java exceptions.
+
+In this article, we'll breakdown my thoughts and takeaways from [Kotlin and Exceptions by Roman Elizarov](https://elizarov.medium.com/kotlin-and-exceptions-8062f589d07), the project lead for Kotlin programming @ JetBrains.
+
+## From the Ashes
+When performing operations that may fail due to some external circumstance, _like interacting with files and the network,_
+you would have to write code that checks the corresponding error condition and handle it.
+This was a tedious effort that was easy to forget, and hard to debug.
+
+Java's solution to this was to use checked exceptions, where every I/O operation is declared `IOException` in Java,
+and the compiler checks that you either handle the exception or rethrow it.
+This allows you to write exception handling code once for a bunch of I/O operations and allows the compiler to ensure developers don't forget to handle them.
+
+### Problems
+This worked for a while, but the problems accumulated over the years:
+- Memory I/O APIs still declared `IOException` even though they never happened
+- People abused checked exceptions in API design, leading to contagious lists of thrown exceptions
+- Developers began routinely catching and ignoring exceptions to fit interfaces / API requirements
+
+Perhaps the biggest killer for Java's philosophy to exceptions came in the evolution of how developers now solve software engineering problems.
+Checked exceptions simply don't mix well with functional abstractions, nor compose well with higher order functions.  
+Popular successor languages to Java, or even additions to Java's own collection framework _(streams and data-processing operators)_ excluded checked exception support, as it was too cumbersome to support.  
+As Roman explains it:
+> Checked exceptions are now widely accepted to be a language design dead-end.
+
+This is the backdrop in which Kotlin was born into.
+
+## Kotlin's Way
+Kotlin inherited _Java's concept of exceptions_ and supports them seamlessly to interop with JVM libraries,
+however, Kotlin exceptions are its own thing that comes with its own style of usage.
+So how should Kotlin exceptions be used?
+
+### Logical Errors
+Exceptions should be used for failed pre-conditions and invariants in the system that the compiler can't catch.
+As opposed to **exceptions for control flow**, _where you define expected exceptions and handling logic,_ 
+these logical errors are for when the system logic doesn't make sense anymore _eg. index out of range or divide by zero error._ 
+
+Roman elaborates:  
+> As a rule of thumb, you should not be catching exceptions in general Kotlin code...
+> Exceptions should be handled by some top-level framework code of your application to alert developers of the bugs in the code and to restart your application or its affected operation. 
+> 
+> That’s the primary purpose of exceptions in Kotlin.
+
+### Avoid Exceptions with Dual-use APIs
+Kotlin's standard library is designed with null-safety in mind, much of its error handling interplays nicely with nulls.
+For problems where its less clear whether it's an input or a program logic error, Kotlin provides an API for both cases.  
+
+Consider the following code:
+```kotlin
+// Input could come from user input or be a constant
+val input = getInput() // "123"
+val number = input.toInt()
+```
+If the input was the constant _**"123"**_ and it failed to parse, then that is a bug in the code and `input.toInt()` will throw a `NumberFormatException`. 
+That is exactly what this function would do.
+The idiomatic thing to resolve this issue in Java would be to wrap this function in a _try/catch_, but not in Kotlin.
+
+What if the input came from a user? The context for where the data comes from matters, as a failure in this case would most likely be from a user error.
+Kotlin provides a dedicated function _(or dual-use api)_ for this situation:
+```kotlin
+val number = input.toIntOrNull()
+```
+This code now idicates an error through its _result value (using null)_, which will play well with the rest of the Kotlin language.
+For problems where there is a singular error condition for the operation, and you only care about a success or failure, then it is recommended to tend towards nulls over exceptions.
+
+Roman elaborates:
+> If there are multiple error conditions, then create a sealed class hierarchy to represent various results of your function. Kotlin has all those needs covered by design, including a powerful when expression.
+
+### Input/Output
+Input and output operations represent a special problem where there's not necessarily any logic errors in the code,
+but external conditions that the code has no control over, but must deal with.
+Converting every I/O error into a special result will quickly get you back to the checked exceptions issue that we saw in Java.
+
+The default stance is to use exceptions for input/output.
+This way, you can write dense logic without worrying what each network call will produce.
+
+Roman elaborates:
+> Dedicate a single top-level place in your code to address all network errors uniformly.
+
+Kotlin exceptions are not checked, so one can forget to implement this error handling producing logical errors that break applications.
+These will get reported as bugs to developers, which is the stance the Kotlin team are okay with _(but you're very welcome to disagree)_.
+
+## Building Applications the Kotlin Way 
+As a subscriber to [Hexagonal Architecture](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)), the model fits very well with Roman's recommendations.
+The core domain should be pure with result types, pushing all I/O _(and thereby, exception handling)_ out to the _**ports and adapters**_.
+
+The ports and adapters will all have their own top level handling of exceptions which will convert into result types for our domain, or separately handled for its use case _eg. 500 error for an API_. 
+<img src="/exceptions-in-kotlin/pure-hex-arch.png" width="359" height="202" alt="Image shows an example REST domain setup." style={{borderRadius:'15px', display:'block', marginLeft: 'auto', marginRight: 'auto', width: '50%'}} />
+
+## Ergonomics
+This article is already getting too long, but I felt the need to talk briefly about result types in Kotlin.
+Personally, I don't feel like the standard Kotlin result types are suitable for creating pure and robust systems.
+My main points of criticism are that:
+1. Result type errors _**must**_ be throwable _(so basically, you have exceptions anyway)_
+2. There is no actual enforcement to unravel result type, failure handling errors  will throw exceptions!
+<img src="/exceptions-in-kotlin/default-result-types.png" width="718" height="404" alt="Image shows an example REST domain setup." style={{borderRadius:'15px'}} />
+
+So  what should to use instead? _I can't say._  
+I'm still exploring options and have been having some success with [Arrow.kt](https://arrow-kt.io/), 
+though I've not used it extensively enough in a production environment to provide any advice.
+
