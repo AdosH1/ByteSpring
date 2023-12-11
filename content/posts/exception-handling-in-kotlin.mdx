@@ -1,6 +1,6 @@
 ---
 title: Exception Handling in Kotlin
-description: The use of exceptions vs. result types is a controversial topic that has sparked strong feelings on both sides of the fence. Kotlin's unique history has subtlely shifted its developers to program a certain way. In this article we will discuss the history from which Kotlin was created from and how the Kotlin team views exception handling in the language. 
+description: The use of exceptions vs. result types is a controversial topic that has sparked strong feelings on both sides of the fence. Kotlin's unique history has subtlely shifted its developers to program a certain way. In this article we will discuss the history from which Kotlin was created and how the Kotlin team views exception handling in the language. 
 date: "2023-12-09T00:00:00Z"
 ---
 
@@ -102,10 +102,8 @@ This article is already getting too long, but I felt the need to talk briefly ab
 Personally, I don't feel like the standard Kotlin result types are suitable for creating pure and robust systems.
 My main points of criticism are that:
 1. Result type errors _**must**_ be throwable _(so basically, you have exceptions anyway)_
-2. There is no actual enforcement to unravel result type, failure handling errors  will throw exceptions!
+2. There is no actual enforcement to unravel result types, failure handling errors  will throw exceptions!
 <img src="/exceptions-in-kotlin/default-result-types.png" width="718" height="404" alt="Image shows an example REST domain setup." style={{borderRadius:'15px'}} />
 
-So  what should to use instead? _I can't say._  
-I'm still exploring options and have been having some success with [Arrow.kt](https://arrow-kt.io/), 
-though I've not used it extensively enough in a production environment to provide any advice.
-
+So  what should you use instead of the standard result types? _I'm not sure._  
+Whether you roll your own or use third party libraries, I have not found a definitive solution to this problem yet.
