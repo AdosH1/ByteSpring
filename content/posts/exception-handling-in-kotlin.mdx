@@ -90,11 +90,17 @@ Roman elaborates:
 Kotlin exceptions are not checked, so one can forget to implement this error handling producing logical errors that break applications.
 These will get reported as bugs to developers, which is the stance the Kotlin team are okay with _(but you're very welcome to disagree)_.
 
-## Building Applications the Kotlin Way 
-As a subscriber to [Hexagonal Architecture](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)), the model fits very well with Roman's recommendations.
-The core domain should be pure with result types, pushing all I/O _(and thereby, exception handling)_ out to the _**ports and adapters**_.
+## Building Applications the Kotlin Way (Opinion)
+As a subscriber to [Hexagonal Architecture](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)) _(though other architectures are completely fine)_, 
+I think the model fits very well with Roman's recommendations:
+- Exceptions should not be caught in general Kotlin code
+- Exceptions should be handled by some top-level framework
+- Use sealed class heirarchies to represent various result types (and enforce with `when` operator)
+- Use exceptions for logic errors, type-safe results for everything else
 
-The ports and adapters will all have their own top level handling of exceptions which will convert into result types for our domain, or separately handled for its use case _eg. 500 error for an API_. 
+With that in mind, I think the core domain should be pure with result types, pushing all I/O _(and thereby, exception handling)_ out to the _**ports and adapters**_.
+
+The ports and adapters will all have their own top level handling of exceptions which will convert into result types for our domain, or separately handled for its use case _eg. 500 error for an API call_. 
 <img src="/exceptions-in-kotlin/pure-hex-arch.png" width="359" height="202" alt="Image shows an example REST domain setup." style={{borderRadius:'15px', display:'block', marginLeft: 'auto', marginRight: 'auto', width: '50%'}} />
 
 ## Ergonomics
