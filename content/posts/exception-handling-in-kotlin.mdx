@@ -1,16 +1,16 @@
 ---
 title: Exception Handling in Kotlin
-description: The use of exceptions vs. result types is a controversial topic that has sparked strong feelings on both sides of the fence. Kotlin's unique history has subtlely shifted its developers to program a certain way. In this article we will discuss the history from which Kotlin was created and how the Kotlin team views exception handling in the language. 
+description: The use of exceptions vs. result types is a controversial topic that has sparked strong feelings on both sides of the fence. Kotlin's unique history has subtly shifted its developers to program a certain way. In this article we will discuss the history from which Kotlin was created and how the Kotlin team views exception handling in the language. 
 date: "2023-12-09T00:00:00Z"
 ---
 
 Kotlin is a modern programming language with its first stable release dating back to February 2016.
-It began development in 2010 as developers found a need to build a language that was _concise, elegrant and expressive, but also **interoperable with Java**_.
+It began development in 2010 as developers found a need to build a language that was _concise, elegant and expressive, but also **interoperable with Java**_.
 
 This lead to many design decisions that have shaped the way we program in Kotlin,
 and with regard to the use of exceptions vs. result types, Kotlin has inherited the learnings, and baggage of Java exceptions.
 
-In this article, we'll breakdown my thoughts and takeaways from [Kotlin and Exceptions by Roman Elizarov](https://elizarov.medium.com/kotlin-and-exceptions-8062f589d07), the project lead for Kotlin programming @ JetBrains.
+In this article, we'll break down my thoughts and takeaways from [Kotlin and Exceptions by Roman Elizarov](https://elizarov.medium.com/kotlin-and-exceptions-8062f589d07), the project lead for Kotlin programming @ JetBrains.
 
 ## From the Ashes
 When performing operations that may fail due to some external circumstance, _like interacting with files and the network,_
@@ -53,7 +53,7 @@ Roman elaborates:
 
 ### Avoid Exceptions with Dual-use APIs
 Kotlin's standard library is designed with null-safety in mind, much of its error handling interplays nicely with nulls.
-For problems where its less clear whether it's an input or a program logic error, Kotlin provides an API for both cases.  
+For problems where it's less clear whether it's an input or a program logic error, Kotlin provides an API for both cases.  
 
 Consider the following code:
 ```kotlin
@@ -70,11 +70,11 @@ Kotlin provides a dedicated function _(or dual-use api)_ for this situation:
 ```kotlin
 val number = input.toIntOrNull()
 ```
-This code now idicates an error through its _result value (using null)_, which will play well with the rest of the Kotlin language.
+This code now indicates an error through its _result value (using null)_, which will play well with the rest of the Kotlin language.
 For problems where there is a singular error condition for the operation, and you only care about a success or failure, then it is recommended to tend towards nulls over exceptions.
 
 Roman elaborates:
-> If there are multiple error conditions, then create a sealed class hierarchy to represent various results of your function. Kotlin has all those needs covered by design, including a powerful when expression.
+> If there are multiple error conditions, then create a sealed class hierarchy to represent various results of your function. Kotlin has all those needs covered by design, including a powerful _when_ expression.
 
 ### Input/Output
 Input and output operations represent a special problem where there's not necessarily any logic errors in the code,
@@ -95,7 +95,7 @@ As a subscriber to [Hexagonal Architecture](https://en.wikipedia.org/wiki/Hexago
 I think the model fits very well with Roman's recommendations:
 - Exceptions should not be caught in general Kotlin code
 - Exceptions should be handled by some top-level framework
-- Use sealed class heirarchies to represent various result types (and enforce with `when` operator)
+- Use sealed class hierarchies to represent various result types (and enforce with `when` operator)
 - Use exceptions for logic errors, type-safe results for everything else
 
 With that in mind, I think the core domain should be pure with result types, pushing all I/O _(and thereby, exception handling)_ out to the _**ports and adapters**_.
