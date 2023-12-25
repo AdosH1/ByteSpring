@@ -101,7 +101,7 @@ I think the model fits very well with Roman's recommendations:
 With that in mind, I think the core domain should be pure with result types, pushing all I/O _(and thereby, exception handling)_ out to the _**ports and adapters**_.
 
 The ports and adapters will all have their own top level handling of exceptions which will convert into result types for our domain, or separately handled for its use case _eg. 500 error for an API call_. 
-<img src="/exceptions-in-kotlin/pure-hex-arch.png" width="359" height="202" alt="Image shows an example REST domain setup." style={{borderRadius:'15px', display:'block', marginLeft: 'auto', marginRight: 'auto', width: '50%'}} />
+<img src="/exceptions-in-kotlin/pure-hex-arch.png" width="359" height="202" alt="A diagram showing pure functions in the domain whilst exceptions and result types are in the ports and adapters of hexagonal architecture" style={{borderRadius:'15px', display:'block', marginLeft: 'auto', marginRight: 'auto', width: '50%'}} />
 
 ## Ergonomics
 This article is already getting too long, but I felt the need to talk briefly about result types in Kotlin.
@@ -109,7 +109,7 @@ Personally, I don't feel like the standard Kotlin result types are suitable for 
 My main points of criticism are that:
 1. Result type errors _**must**_ be throwable _(so basically, you have exceptions anyway)_
 2. There is no actual enforcement to unravel result types, failure handling errors  will throw exceptions!
-<img src="/exceptions-in-kotlin/default-result-types.png" width="718" height="404" alt="Image shows an example REST domain setup." style={{borderRadius:'15px'}} />
+<img src="/exceptions-in-kotlin/default-result-types.png" width="718" height="404" alt="A code example of kotlin result types not enforcing the unwinding of result types" style={{borderRadius:'15px'}} />
 
 So  what should you use instead of the standard result types? _I'm not sure._  
 Whether you roll your own or use third party libraries, I have not found a definitive solution to this problem yet.
