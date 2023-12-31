@@ -82,7 +82,7 @@ This data structure allows memory to be stored in smaller chunks around the neig
 Accessing a specific element in a linked list is a little harder, as we only have a reference to the starting element. 
 A computer has to crawl through each element from the start until it finds the element it is looking for.
 
-The benefit of this structure is that adding and removing elements is very easy once you have an element, as you can simply a change where the memory addresses point to. 
+The benefit of this structure is that adding and removing elements is very easy once you have an element, as you can simply change where the memory addresses point to. 
 
 <img src="/fundamental-view-data-structures/noncontiguous-cake-delete.png" 
     width="718" height="404" 
@@ -90,7 +90,7 @@ The benefit of this structure is that adding and removing elements is very easy 
     style={{borderRadius:'15px'}} />
 
 Similarly, if we need to extend the length of our linked list we can do so without much issue, we just add a reference to the new memory address at the end of the list. 
-Linked lists don’t require a large set of contiguous memory to be set aside either, no so copying arrays or element rejigging is ever needed to maintain the structure.
+Linked lists don’t require a large set of contiguous memory to be set aside either, so copying arrays or element rejigging is ever needed to maintain the structure.
 
 ## Data Structures in the Wild
 

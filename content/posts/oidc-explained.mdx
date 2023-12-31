@@ -1,0 +1,46 @@
+---
+title: OpenID Connect Explained (Simply) 
+description: 
+date: "2023-12-31T00:00:00Z"
+---
+
+Open Identity Connect (OIDC) is an authentication protocol built on top of OAuth.
+It allows resource owners to verify the identity of an end-user and obtain basic information about them.
+
+OAuth does not specify a way for servers to authenticate, but rather assumes all parties are already trusted.
+In a practical sense, without authentication, this makes OAuth unusable on the web unless paired with a separate authentication protocol, 
+that is what OpenID Connect is.
+Where OAuth is concerned about authorization, OIDC is concerned with authentication.  
+If you'd like to learn more about OAuth, see [OAuth Explained (simply)](./oauth-explained.mdx).
+
+## How It Works
+OIDC uses _**Identity Tokens**_ to communicate claims about an end-user's identity and their basic user data (depending on implementation).
+A given a minimal set of claims, it contains no details about the user but demonstrates that the user was authenticated by a trusted entity, and thus trust the claims about their identity.
+
+Besides being an critical step to accessing resources, 
+identity tokens are commonly used to personalise the user experience by recognising their preferences, 
+displaying information based on user status or country etc.
+
+
+## OpenID Connect Authentication Flow
+OAuth authorization servers implementing OIDC are referred to as OpenID Providers (OPs) & resource servers are referred to as Relying Parties (RPs)
+The authentication flow looks like this:
+<Image src="/oidc-explained/oidc-flow.png" width="718" height="404" alt="oidc control flow" style={{borderRadius:'15px'}} />
+
+1. The Relying Party sends a request to the OpenID Provider
+2. OP authenticates the End-User and obtains authorization
+3. OP responds with an ID Token and usually an Access Token (OAuth)
+    - At this point, the application may have all the data it needs from the claims
+4. RP can further request with the Identity Token to a UserInfo endpoint
+5. The UserInfo endpoint returns claims about the end-user
+
+This flow might look very similar to the OAuth flow, which is on purpose.
+OIDC is build on top of OAuth, providing almost the same workflow but with authentication built in. 
+
+## Identity Tokens
+Identity tokens are security tokens that contain claims about:
+- How a user was authenticated
+- Basic details about the end user
+- Any other claims you wish to add (it will be ignored at the protocol level)
+
+This information is packaged 
