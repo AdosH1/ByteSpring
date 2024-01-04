@@ -1,0 +1,57 @@
+---
+title: OAuth Explained Simply
+description: OAuth is a fundamental part of the web we interact with every day, though not many people know much about it. In this article we'll explore what OAuth is (and what it isn't) in a digestable way. 
+date: "2023-12-19T00:00:00Z"
+---
+
+OAuth is an _authorization_ protocol developed that aims to enable third parties to gain limited access to resources over HTTP services. 
+It provides no opinions on authentication, or any other means of authorization outside of the HTTP protocol.
+It was made to solve common problems that users encountered when trying to share protected content on the web, whether it be a private file to a group of friends or web pages protected by a login step.
+
+### The Problem
+When a client needs to access a restricted resource, they need to authenticate with the server using credentials that the resource owner has given privileges.
+This means that the credentials will need to be shared with the third party _eg. a password protected file or login details to a server._
+
+<Image src="/oauth-explained/oauth-problem.png" width="718" height="404" alt="Image showing a resource owner needing to send their access credentials to a client for them to access a resource." style={{borderRadius:'15px'}} />
+
+This creates several problems:
+- Third party applications are required to store the credentials
+    - Compromise of any third party will compromise all data protected by those credentials
+- Overly broad access to protected resources
+    - Inability to restrict the duration or subset of data
+- Inability to revoke access to an individual third party, without revoking access to all parties.
+
+### Enter OAuth
+OAuth introduces an authorization layer, separating the client from the resource owner.
+Clients requesting resources are issued a different set of credentials from those of the resource owner.
+
+These credentials are usually in the form of a unique access token, in which the client is able to use in exchange for a restricted resource.
+They can work better than username and passwords, because these tokens have a defined set of scopes and a duration of access, which enables granular control of a client's access to a resource.
+
+_OAuth Example: **Mason** the photographer grants the printing service **Inkredible** access to his protected photos stored in **DropCube**, without needing to share his credentials with the printing service._
+
+<Image src="/oauth-explained/oauth-example.png" width="718" height="404" alt="Image showing a resource owner needing to send their access credentials to a client for them to access a resource." style={{borderRadius:'15px'}} />
+
+In this example, the _**resource owner**_ and _**client**_ both have to authenticate with the _**authorization server**_ in order to grant or receive access.
+The protocol doesn't concern itself with how they're authenticated, but it is a required step for the server to know who each party in order to assign access.
+
+OAuth allows _**resource owners**_ to delegate authorization to a trusted _**authorization server**_, 
+which in turn can provide granular, scoped access to resources without risking privileged credentials leaking from the owner or third party.
+
+### Authorization Grants and Access tokens
+An _**authorization grant**_ is a credential that represents the resource owner's authorization to access their protected resources.
+It is used to _obtain an access token_ and is usually given at the start of the OAuth flow. 
+
+_**Access tokens**_ are credentials _used to access protected resources._
+They are an opaque string that denotes a _specific set of scopes, durations of access and other attributes_ enforced by the _**resource server**_ and _**authorization server**_. 
+Depending on the implementation, they can have different formats, structures and use cases _(based on the application's needs)_, though its use is beyond the scope of the OAuth protocol.
+
+#### Authorization flow
+The basic OAuth authorization flow looks like this:
+<Image src="/oauth-explained/token-flow.png" width="718" height="404" alt="The client flow from request authorization grant, to access token, to the protect resource." style={{borderRadius:'15px'}} />
+
+It is worth noting that there is no distinction for whether the roles are the same entity or not. 
+For example, it is common for the _**resource server**_ and _**resource owner**_ to be the same entity _(eg. restricted webpage)_, or the _**authorization server**_ and _**resource server**_ to be the same entity _(eg. google drive)_. 
+
+There may also be further complexities depending on implementation that allow for usability like _refresh tokens flows or the ability to revoke tokens scopes._  
+It's worth looking deeper into the specific implementations of your application to best understand how OAuth is implemented in your organization. 
